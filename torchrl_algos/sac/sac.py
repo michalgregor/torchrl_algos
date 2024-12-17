@@ -23,7 +23,7 @@ from torchrl._utils import logger as torchrl_logger
 from torchrl.envs.utils import ExplorationType, set_exploration_type
 
 from torchrl.record.loggers import generate_exp_name, get_logger
-from utils import (
+from .utils import (
     dump_video,
     log_metrics,
     make_collector,
@@ -42,8 +42,8 @@ def main(
     make_loss_module_fn=make_loss_module,
     make_collector_fn=make_collector,
     make_replay_buffer_fn=make_replay_buffer,
-    make_sac_optimizer_fn=make_sac_optimizer
-
+    make_sac_optimizer_fn=make_sac_optimizer,
+    logger=None,
 ):  # noqa: F821
     device = cfg.network.device
     if device in ("", None):
@@ -55,8 +55,8 @@ def main(
 
     # Create logger
     exp_name = generate_exp_name("SAC", cfg.logger.exp_name)
-    logger = None
-    if cfg.logger.backend:
+
+    if logger is None and cfg.logger.backend:
         logger = get_logger(
             logger_type=cfg.logger.backend,
             logger_name="sac_logging",
@@ -231,6 +231,4 @@ def main(
     execution_time = end_time - start_time
     torchrl_logger.info(f"Training took {execution_time:.2f} seconds to finish")
 
-
-if __name__ == "__main__":
-    main()
+    return logger
